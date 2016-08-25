@@ -53,9 +53,9 @@ Rectangle {
             var newWindow = component.createObject(desktop);
             request.openIn(newWindow.webView);
             if (File.isZippedFbx(desktop.currentUrl)) {
+                runJavaScript(autoCancel);                
                 zipTimer.handler = function() {
                     newWindow.destroy();
-                    runJavaScript(autoCancel);
                 }
                 zipTimer.start();
             }
@@ -80,24 +80,46 @@ Rectangle {
         id: switchMarketView
         anchors.top: parent.top
         anchors.right: parent.right
-        colorScheme: hifi.colorSchemes.dark
+        colorScheme: hifi.colorSchemes.light
         width: 200
         height: 40
         visible: true
         model: ["Marketplace", "Clara.io"]
         onCurrentIndexChanged: {
             if (currentIndex === 0) { webview.url = "https://metaverse.highfidelity.com/marketplace"; }
-            if (currentIndex === 1) { webview.url = "https://clara.io/library"; }
+            if (currentIndex === 1) { webview.url = "https://clara.io/library?public=true&query="; }
         }
-        
+        //switchMarketView.textField.color: hifi.colors.white        
     }
 
     Controls.Label {
         id: switchMarketLabel
+        height: switchMarketView.height
         anchors.verticalCenter: switchMarketView.verticalCenter
         anchors.right: switchMarketView.left
         color: hifi.colors.white
         text: "Explore interesting content from: "
+    }
+
+    Controls.Button {
+        id: switchMarketHelpButton
+        height: switchMarketView.height
+        width: 60
+        anchors.top: parent.top
+        anchors.left: parent.left
+        visible: switchMarketView.currentIndex === 1
+        text: "help"
+    }
+
+    Controls.TextField {
+        id: helpInfo
+        visible: switchMarketHelpButton.pressed === true
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: 470
+        height: 170
+        label: "How to Use Clara.io"
+        placeholderText: "1. Sign up/log on to Clara.io to access models\n2. Browse through the library or 'Search 3D Models'\n3. Click the 'Download' button on the model preview page\n4. Select the 'Autodesk FBX (.fbx)' option\n5. Wait for the model to export in the new overlay\n6. Click the yellow 'Download' button\n7. Save your model to the Asset Browser\n8. Select your model from the Asset Browser and 'Load to World'"
     }
 
 }
