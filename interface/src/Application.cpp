@@ -2301,7 +2301,7 @@ void Application::keyPressEvent(QKeyEvent* event) {
                 } else if (isOption && !isShifted && !isMeta) {
                     Menu::getInstance()->triggerOption(MenuOption::ScriptEditor);
                 } else if (!isOption && !isShifted && isMeta) {
-                    takeSnapshot();
+                    takeSnapshot(true);
                 }
                 break;
 
@@ -4331,7 +4331,7 @@ namespace render {
            }
             case model::SunSkyStage::SKY_BOX: {
                 auto skybox = skyStage->getSkybox();
-                if (skybox) {
+                if (!skybox->empty()) {
                     PerformanceTimer perfTimer("skybox");
                     skybox->render(batch, args->getViewFrustum());
                     break;
@@ -4918,6 +4918,7 @@ bool Application::canAcceptURL(const QString& urlString) const {
 bool Application::acceptURL(const QString& urlString, bool defaultUpload) {
     if (urlString.startsWith(HIFI_URL_SCHEME)) {
         // this is a hifi URL - have the AddressManager handle it
+        emit receivedHifiSchemeURL(urlString);
         QMetaObject::invokeMethod(DependencyManager::get<AddressManager>().data(), "handleLookupString",
                                   Qt::AutoConnection, Q_ARG(const QString&, urlString));
         return true;
@@ -5193,15 +5194,24 @@ void Application::toggleLogDialog() {
     }
 }
 
-void Application::takeSnapshot() {
-    QMediaPlayer* player = new QMediaPlayer();
-    QFileInfo inf = QFileInfo(PathUtils::resourcesPath() + "sounds/snap.wav");
-    player->setMedia(QUrl::fromLocalFile(inf.absoluteFilePath()));
-    player->play();
+void Application::takeSnapshot(bool notify, float aspectRatio) {
+    postLambdaEvent([notify, aspectRatio, this] {
+        QMediaPlayer* player = new QMediaPlayer();
+        QFileInfo inf = QFileInfo(PathUtils::resourcesPath() + "sounds/snap.wav");
+        player->setMedia(QUrl::fromLocalFile(inf.absoluteFilePath()));
+        player->play();
 
-    QString path = Snapshot::saveSnapshot(getActiveDisplayPlugin()->getScreenshot());
+        QString path = Snapshot::saveSnapshot(getActiveDisplayPlugin()->getScreenshot(aspectRatio));
 
-    emit DependencyManager::get<WindowScriptingInterface>()->snapshotTaken(path);
+        emit DependencyManager::get<WindowScriptingInterface>()->snapshotTaken(path, notify);
+    });
+}
+
+void Application::shareSnapshot(const QString& path) {
+    postLambdaEvent([path] {
+        // not much to do here, everything is done in snapshot code...
+        Snapshot::uploadSnapshot(path);
+    });
 }
 
 float Application::getRenderResolutionScale() const {
