@@ -24,6 +24,7 @@ TextField {
     property string label: ""
     property real controlHeight: height + (textFieldLabel.visible ? textFieldLabel.height + 1 : 0)
 
+    text: textField.text
     placeholderText: textField.placeholderText
 
     FontLoader { id: firaSansSemiBold; source: "../../fonts/FiraSans-SemiBold.ttf"; }

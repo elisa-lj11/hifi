@@ -27,13 +27,14 @@ Rectangle {
     anchors.fill: parent
     color: hifi.colors.baseGrayShadow
     property var currentUrl: "https://metaverse.highfidelity.com/marketplace"
+    property int comboHeight: 40
 
     Controls.WebView {
         id: webview
         url: currentUrl
         anchors.top: switchMarketView.bottom
         width: parent.width
-        height: parent.height - 40
+        height: parent.height - comboHeight
         focus: true
 
         Timer {
@@ -80,9 +81,9 @@ Rectangle {
         id: switchMarketView
         anchors.top: parent.top
         anchors.right: parent.right
-        colorScheme: hifi.colorSchemes.light
+        colorScheme: hifi.colorSchemes.dark
         width: 200
-        height: 40
+        height: comboHeight
         visible: true
         model: ["Marketplace", "Clara.io"]
         onCurrentIndexChanged: {
@@ -113,13 +114,18 @@ Rectangle {
 
     Controls.TextField {
         id: helpInfo
+        colorScheme: hifi.colorSchemes.dark
         visible: switchMarketHelpButton.pressed === true
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: 470
         height: 170
         label: "How to Use Clara.io"
-        placeholderText: "1. Sign up/log on to Clara.io to access models\n2. Browse through the library or 'Search 3D Models'\n3. Click the 'Download' button on the model preview page\n4. Select the 'Autodesk FBX (.fbx)' option\n5. Wait for the model to export in the new overlay\n6. Click the yellow 'Download' button\n7. Save your model to the Asset Browser\n8. Select your model from the Asset Browser and 'Load to World'"
+        placeholderText:    "1. Sign up/log on to Clara.io to access models\n2. Browse through the library or 'Search 3D Models'\n" + 
+                            "3. Click the 'Download' button on the model preview page\n4. Select the 'Autodesk FBX (.fbx)' option\n" + 
+                            "5. Wait for the model to export in the new overlay\n6. Click the yellow 'Download' button\n" + 
+                            "7. Save your model to the Asset Browser\n8. Select your model from the Asset Browser and 'Load to World'"
+        font.italic: false
     }
 
 }
