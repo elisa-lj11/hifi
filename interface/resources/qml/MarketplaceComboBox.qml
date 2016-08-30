@@ -36,6 +36,17 @@ Rectangle {
         width: parent.width
         height: parent.height - comboHeight
         focus: true
+        newWindowHook: function (component, newWindow) {
+            if (File.isZippedFbx(desktop.currentUrl)) {
+                runJavaScript(autoCancel);                
+                zipTimer.handler = function() {
+                    console.log("timer started", newWindow)
+                    newWindow.destroy();
+                }
+                zipTimer.start();
+            }
+        }
+
 
         Timer {
             id: zipTimer
@@ -48,19 +59,6 @@ Rectangle {
 
         property var autoCancel: 'var element = $("a.btn.cancel");
                                   element.click();'
-
-        onNewViewRequested: {
-            var component = Qt.createComponent("Browser.qml");
-            var newWindow = component.createObject(desktop);
-            request.openIn(newWindow.webView);
-            if (File.isZippedFbx(desktop.currentUrl)) {
-                runJavaScript(autoCancel);                
-                zipTimer.handler = function() {
-                    newWindow.destroy();
-                }
-                zipTimer.start();
-            }
-        }
 
         property var simpleDownload: 'var element = $("a.download-file");
                                       element.removeClass("download-file");
