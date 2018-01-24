@@ -136,7 +136,8 @@ function createEmitGroupNumberPropertyUpdateFunction(group, propertyName) {
 
 function createImageURLUpdateFunction(propertyName) {
     return function () {
-        updateProperty(propertyName, this.value);
+        var newTextures = JSON.stringify({ "tex.picture": this.value });
+        updateProperty(propertyName, newTextures);
     };
 }
 
@@ -511,7 +512,6 @@ function loaded() {
         var elPropertiesList = document.getElementById("properties-list");
         var elID = document.getElementById("property-id");
         var elType = document.getElementById("property-type");
-        debugPrint("the type is: " + JSON.stringify(elType));
         var elTypeIcon = document.getElementById("type-icon");
         var elName = document.getElementById("property-name");
         var elLocked = document.getElementById("property-locked");
@@ -788,7 +788,6 @@ function loaded() {
                     } else {
 
                         properties = data.selections[0].properties;
-                        debugPrint("props: " + JSON.stringify(properties));
                         if (lastEntityID !== '"' + properties.id + '"' && lastEntityID !== null && editor !== null) {
                             saveJSONUserData(true);
                         }
@@ -797,7 +796,7 @@ function loaded() {
                         lastEntityID = '"' + properties.id + '"';
                         elID.value = properties.id;
 
-                        // image is not yet a separate entity type
+                        // HTML workaround since image is not yet a separate entity type
                         if (properties.type === "Model" && properties.modelURL === "https://hifi-content.s3.amazonaws.com/elisalj/image_entity/snapshot.fbx") {
                             properties.type = "Image";
                         }
@@ -1000,8 +999,9 @@ function loaded() {
                             elWebSourceURL.value = properties.sourceUrl;
                             elWebDPI.value = properties.dpi;
                         } else if (properties.type === "Image") {
-                            elImageURL.value = properties.imageURL;
-                            //elImageURL.value = properties.sourceURL;
+                            var imageLink = JSON.parse(properties.textures)["tex.picture"];
+                            debugPrint("image url is: " + imageLink);
+                            elImageURL.value = imageLink;
                         } else if (properties.type === "Text") {
                             elTextText.value = properties.text;
                             elTextLineHeight.value = properties.lineHeight.toFixed(4);
@@ -1369,7 +1369,7 @@ function loaded() {
 
         elShape.addEventListener('change', createEmitTextPropertyUpdateFunction('shape'));
 
-        elImageURL.addEventListener('change', createImageURLUpdateFunction('imageURL'));
+        elImageURL.addEventListener('change', createImageURLUpdateFunction('textures'));
 
         elWebSourceURL.addEventListener('change', createEmitTextPropertyUpdateFunction('sourceUrl'));
         elWebDPI.addEventListener('change', createEmitNumberPropertyUpdateFunction('dpi', 0));
