@@ -168,10 +168,18 @@ Rectangle {
                         "We recommend OBS for streaming and recording the contents of your monitor to services like " +
                         "Twitch, YouTube Live, and Facebook Live.<br><br>" +
                         "To get started using OBS, click this link now. The page will open in an external browser:<br>" +
-                        '<font size="4"><a href="https://obsproject.com/forum/threads/official-overview-guide.402/">OBS Official Overview Guide</a></font>');
+                        '<font size="4"><a href="#OBSGuide">OBS Official Overview Guide</a></font>');
+                        // '<font size="4"><a href="https://obsproject.com/forum/threads/official-overview-guide.402/">OBS Official Overview Guide</a></font>');
                 }
                 onEntered: parent.color = hifi.colors.blueHighlight;
                 onExited: parent.color = hifi.colors.blueAccent;
+                
+            }
+            onLinkActivated: {
+                console.debug("spectator link clicked");
+                if (link === "#OBSGuide") {
+                    Qt.openUrlExternally("https://obsproject.com/forum/threads/official-overview-guide.402/");
+                }
             }
         }
 
